@@ -67,6 +67,7 @@ Object.keys(C.categories).forEach(function(c){if(cats.indexOf(c)>-1){cats.splice
 cats=Object.keys(C.categories).filter(function(c){return cats.indexOf(c)>-1}).concat(cats.filter(function(c){return !C.categories[c]}));
 function cl(c){var o=C.categories[c]||{};return{ar:o.ar||c,en:o.en||c,icon:o.icon||"\uD83D\uDCE6"}}
 function sl(s){var o=C.subcategories&&C.subcategories[s];return o?{ar:o[0],en:o[1]}:{ar:s,en:s}}
+function psub(p){return p.sub||(p.cat==="laptops"&&p.name?p.name.split(" ")[0]:null)}
 function t(o){return h.lang==="ar"?o.ar:o.en}
 function esc(x){return String(x).replace(/[&<>"]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
 function msg(n){return h.lang==="ar"?"السلام عليكم، عايز أطلب: "+n:"Hello, I would like to order: "+n}
@@ -74,10 +75,10 @@ function order(){var a=[],byc={};cats.forEach(function(c){byc[c]=[]});P.forEach(
 var ORD=order();
 function bar(){var b=document.getElementById("bar");var n={all:P.length};cats.forEach(function(c){n[c]=0});P.forEach(function(p){n[p.cat]++});
 b.innerHTML='<button class="chip'+(cat==="all"?" on":"")+'" data-c="all">'+(h.lang==="ar"?"الكل":"All")+" ("+n.all+")</button>"+cats.map(function(c){var l=cl(c);return'<button class="chip'+(cat===c?" on":"")+'" data-c="'+esc(c)+'">'+l.icon+" "+esc(t(l))+" ("+n[c]+")</button>"}).join("");
-var sb=document.getElementById("sbar"),ss=[];if(cat!=="all")P.forEach(function(p){if(p.cat===cat&&p.sub&&ss.indexOf(p.sub)<0)ss.push(p.sub)});
+var sb=document.getElementById("sbar"),ss=[];if(cat!=="all")P.forEach(function(p){var u=psub(p);if(p.cat===cat&&u&&ss.indexOf(u)<0)ss.push(u)});
 sb.innerHTML=ss.length?'<button class="chip'+(sub==="all"?" on":"")+'" data-s="all">'+(h.lang==="ar"?"كل الأنواع":"All types")+"</button>"+ss.map(function(s){return'<button class="chip'+(sub===s?" on":"")+'" data-s="'+esc(s)+'">'+esc(t(sl(s)))+"</button>"}).join(""):""}
 function render(){bar();
-var L=ORD.filter(function(p){return(cat==="all"||p.cat===cat)&&(sub==="all"||p.sub===sub)&&(!q||(p.name+" "+(p.sub||"")).toLowerCase().indexOf(q)>-1)});
+var L=ORD.filter(function(p){var u=psub(p);return(cat==="all"||p.cat===cat)&&(sub==="all"||u===sub)&&(!q||(p.name+" "+(u||"")).toLowerCase().indexOf(q)>-1)});
 var g=document.getElementById("pg");
 g.innerHTML=L.slice(0,lim).map(function(p){
 var im=p.img&&p.img.length&&IM[p.img[0]]?'<img loading="lazy" alt="'+esc(p.name)+'" src="'+IM[p.img[0]]+'">':"&#9881;";
